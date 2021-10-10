@@ -1,0 +1,8 @@
+version: "3"
+services:
+  dtmf-butler:
+    container_name: dtmf-butler
+    image: dtmf-butler:latest
+    devices:
+      - '/dev/ttyACM0:/dev/ttyACM0'
+    restart: always
