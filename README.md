@@ -23,7 +23,7 @@ Dockerized Python serial modem attendant to pick up and dial a key.
 
 ```bash
 # Get the latest python base image
-docker pull python:3.9-alpine
+docker pull python:3-alpine
 
 # Build a local image
 docker build -t dtmf-butler .
