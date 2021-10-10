@@ -2,6 +2,8 @@
 
 Dockerized Python serial modem attendant to pick up and dial a key.
 
+[![Pylint](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/pylint.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/pylint.yml) [![CodeQL](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/codeql-analysis.yml)
+
 ## Quickstart
 
 1. Integrate the included `docker-compose.yml`
