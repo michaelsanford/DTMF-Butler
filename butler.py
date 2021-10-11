@@ -115,4 +115,3 @@ while True:
     if "R".encode() in response:
         print("ANSWERING DOOR")
         AT(f"D{DIAL}")
-        AT("H")
