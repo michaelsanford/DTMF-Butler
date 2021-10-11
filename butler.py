@@ -1,94 +1,111 @@
-# pylint: disable=C0321, C0114, W0702, C0103, C0301, R1710
+# pylint: disable=C0321, C0114, W0702, C0103, C0301, R1710, W0603, W0621
 from os import getenv
 from time import sleep
 from pathlib import Path
+import logging
 import sys
 import serial
-import sanity
+import checks
 
-BAUDRATE = int(getenv('BAUDRATE', '57600'))
 DIAL = getenv('DIAL', '6')
 TIMEOUT = int(getenv('TIMEOUT', '3'))
-DTMF_DURATION = getenv('DTMF_DURATION', '255')
 
-# Sanity checks
-if BAUDRATE not in sanity.BAUDRATES:
-    print(
-        f"FATAL: 'BAUDRATE' of {BAUDRATE} provided is invalid, must be one of {sanity.BAUDRATES}.")
+hc_fail_counter = 0
+modem_listen = True
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger('main')
+
+if DIAL not in checks.DIALABLES:
+    log.fatal("'DIAL' of %s is invalid, must be one of %s.",
+              DIAL, checks.DIALABLES)
     sys.exit(1)
 
-if DIAL not in sanity.DIALABLES:
-    print(
-        f"FATAL: Provided 'DIAL' of {DIAL} is invalid, must be one of {sanity.DIALABLES}.")
-    sys.exit(1)
-
-if not 1 <= int(DTMF_DURATION) <= 255:
-    print(
-        f"FATAL: Provided 'DTMF_DURATION' of {DTMF_DURATION} is invalid, must be between 1 and 255.")
-    sys.exit(1)
-
-if not 1 <= TIMEOUT <= sanity.TIMOUT_MAX:
-    print(
-        f"FATAL: Provided 'TIMEOUT' of {TIMEOUT} is invalid, must be between 1 and {sanity.TIMOUT_MAX}.")
+if not 1 <= TIMEOUT <= checks.TIMOUT_MAX:
+    log.fatal("'TIMEOUT' of %s is invalid, must be between 1 and %s",
+              TIMEOUT, checks.TIMOUT_MAX)
     sys.exit(1)
 
 
 # Open the modem
-modem = serial.Serial(port='/dev/ttyACM0', baudrate=BAUDRATE,
+modem = serial.Serial(port='/dev/ttyACM0', baudrate=57600,
                       timeout=TIMEOUT, write_timeout=TIMEOUT)
 
 
 def configure_modem():
     """Configure the modem or terminate the program"""
 
+    log = logging.getLogger('configure')
+
     try:
         if not AT():
-            print("FATAL: Unable to reach the modem.")
-            sys.exit(2)
+            log.fatal("Unable to reach the modem.")
+            sys.exit(1)
 
         if not AT("Z"):
-            print("ERROR: Unable to reset the modem.")
+            log.error("Unable to reset the modem.")
 
         if not AT("V1"):
-            print("ERROR: Unable to set V1.")
+            log.error("Unable to set V1.")
 
         if not AT("X0"):
-            print("FATAL: Unable to disable dial done detection.")
+            log.fatal("Unable to disable dial done detection.")
             sys.exit(3)
 
-        if not AT(f"S11={DTMF_DURATION}"):
-            print("ERROR: Unable to set S11 register.")
+        # Wait for Carrier after Dial (seconds)
+        if not AT("S7=1"):
+            log.error("Unable to set S7 register")
+
+        # Carrier Detect Response Time (0.1 seconds)
+        if not AT("S9=10"):
+            log.error("Unable to set S9 register")
+
+        # Delay between Loss of Carrier and Hang-Up (0.1 seconds)
+        if not AT("S10=10"):
+            log.error("Unable to set S10 register")
+
+        # Delay before Force Disconnect (seconds)
+        if not AT("S38=1"):
+            log.error("Unable to set S38 register")
+
+        if not AT("+FCLASS=8"):
+            log.fatal("Unable to set voice mode.")
+            sys.exit(1)
 
     except:
-        print("FATAL: Unable to initialize the modem.")
+        log.fatal("Unable to initialize the modem, %s:", Exception.__name__)
+        log.fatal(Exception.with_traceback())
         sys.exit(1)
 
 
-def AT(command="", log=True):
+def AT(command=""):
     """Sends an AT command to the modem
 
     Keyword arguments:
     command -- A Hayes-compatible AT command (default "").
     """
 
-    try:
-        modem.flush()
+    log = logging.getLogger('AT')
 
+    global modem_listen
+    modem_listen = False
+
+    try:
         modem.write(f"AT{command}\r".encode())
 
-        r = modem.readline() + modem.readline()
-        r = r.rstrip()
+        cmd = modem.readline().rstrip().decode()
+        r = modem.readline().rstrip().decode()
+
+        log.info("%s -> %s", cmd, r)
 
         modem.flush()
-
-        if r is not "".encode():
-            if log:
-                print(r.decode())
-            return "OK" in r.decode()
+        modem_listen = True
+        return "OK" in r
 
     except:
-        print(f"COMMAND FAILED: AT{command}")
-        print(Exception)
+        log.error("Command AT%s failed with %s:", command, Exception.__name__)
+        log.error(Exception.with_traceback())
+        modem_listen = True
         return False
 
 
@@ -96,28 +113,62 @@ def health_check():
     """
     Internal detector for Docker's HEALTHCHECK
     """
+    global hc_fail_counter
+    log = logging.getLogger('healthcheck')
     healthy = modem.isOpen()
     file = Path("/tmp/HEALTH_OK")
+
     if healthy:
         file.touch(exist_ok=True)
     else:
+        hc_fail_counter += 1
+        log.error("Health check failed %d times.", hc_fail_counter)
         file.unlink(missing_ok=True)
+
+        if hc_fail_counter > 5:
+            log.fatal("Exiting.")
+            sys.exit(1)
+
+
+def answer():
+    """
+    Answers the modem in voice mode and presses the
+    configured DIAL button before hanging up
+    """
+
+    log = logging.getLogger('answer')
+
+    if not AT("+FCLASS=8"):
+        log.error("Failed set voice mode.")
+
+    if not AT("+VLS=1"):
+        log.error("Failed answer voice.")
+
+    if not AT(f"+VTS={DIAL}"):
+        log.error("Failed dial")
+
+    if not AT("+VLS=0"):
+        log.info("Failed to hang up voice, trying hard hook.")
+        AT("H")
 
 
 configure_modem()
 
-print("LISTENING...")
+log.info("Monitoring modem...")
 
 while True:
+
+    log = logging.getLogger('listener')
+
     health_check()
-
-    response = modem.readline().rstrip()
-
-    if response is not "".encode():
-        print(response.decode())
 
     sleep(1)
 
-    if "R".encode() in response:
-        print("ANSWERING DOOR")
-        AT(f"D{DIAL}")
+    if modem_listen:
+        response = modem.readline().rstrip().decode()
+
+        if response != "":
+            log.info(response)
+
+        if "R" in response:
+            answer()
