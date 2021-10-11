@@ -9,6 +9,8 @@ import checks
 
 DIAL = getenv('DIAL', '6')
 TIMEOUT = int(getenv('TIMEOUT', '3'))
+TELEGRAM_TOKEN = getenv('TELEGRAM_TOKEN', None)
+TELEGRAM_USERS = getenv('TELEGRAM_USERS', None)
 
 hc_fail_counter = 0
 modem_listen = True
@@ -26,6 +28,8 @@ if not 1 <= TIMEOUT <= checks.TIMOUT_MAX:
               TIMEOUT, checks.TIMOUT_MAX)
     sys.exit(1)
 
+if TELEGRAM_TOKEN is not None and TELEGRAM_USERS is not None:
+    import telegram
 
 # Open the modem
 modem = serial.Serial(port='/dev/ttyACM0', baudrate=57600,
@@ -138,6 +142,8 @@ def answer():
 
     log = logging.getLogger('answer')
 
+    telegram.send(message="Ansering door")
+
     if not AT("+FCLASS=8"):
         log.error("Failed set voice mode.")
 
@@ -146,6 +152,10 @@ def answer():
 
     if not AT(f"+VTS={DIAL}"):
         log.error("Failed dial")
+        telegram.send("FAILED to open the door.")
+    else:
+        log.info("Dial success.")
+        telegram.send("The door has OPENED.")
 
     if not AT("+VLS=0"):
         log.info("Failed to hang up voice, trying hard hook.")

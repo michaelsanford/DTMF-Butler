@@ -16,6 +16,8 @@ Dockerized Python serial modem attendant to pick up and dial a key.
 |---|---|---|
 | `DIAL` | `6` | The button to press after picking up, `0`-`9`, `*` or `#` |
 | `TIMEOUT` | `3` | Timeout (seconds) for modem to react to commands, serial read-write. |
+| `TELEGRAM_TOKEN` | `None` | Your Telegram bot API token. Leave blank to disable. |
+| `TELEGRAM_USERS` | `None` | Comma-separated list of Telegram IDs to message. |
 
 ## Complete Build
 
