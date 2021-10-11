@@ -1,6 +1,7 @@
 # pylint: disable=C0321, C0114, W0702, C0103, C0301, R1710
 from os import getenv
 from time import sleep
+from pathlib import Path
 import sys
 import serial
 import sanity
@@ -41,9 +42,6 @@ def configure_modem():
     """Configure the modem or terminate the program"""
 
     try:
-        modem.flushInput()
-        modem.flushOutput()
-
         if not AT():
             print("FATAL: Unable to reach the modem.")
             sys.exit(2)
@@ -66,7 +64,7 @@ def configure_modem():
         sys.exit(1)
 
 
-def AT(command=""):
+def AT(command="", log=True):
     """Sends an AT command to the modem
 
     Keyword arguments:
@@ -74,43 +72,51 @@ def AT(command=""):
     """
 
     try:
-        modem.flushInput()
-        modem.flushOutput()
+        modem.flush()
 
         modem.write(f"AT{command}\r".encode())
 
         r = modem.readline() + modem.readline()
         r = r.rstrip()
 
+        modem.flush()
+
         if r is not "".encode():
-            print(r.decode())
+            if log:
+                print(r.decode())
             return "OK" in r.decode()
 
     except:
+        print(f"COMMAND FAILED: AT{command}")
         print(Exception)
-        print(f"COMMAND FAILED: {command}")
         return False
 
 
-# def health(ok):
-#     with open("HEALTH", "w") as h:
-#         h.write(f"OK {time.ctime()}" if ok else "FAILED")
+def health_check():
+    """
+    Internal detector for Docker's HEALTHCHECK
+    """
+    healthy = modem.isOpen()
+    file = Path("/tmp/HEALTH_OK")
+    if healthy:
+        file.touch(exist_ok=True)
+    else:
+        file.unlink(missing_ok=True)
 
 
 configure_modem()
 
-
 print("LISTENING...")
 
 while True:
+    health_check()
+
     response = modem.readline().rstrip()
 
     if response is not "".encode():
         print(response.decode())
 
     sleep(1)
-
-    # health(AT())
 
     if "R".encode() in response:
         print("ANSWERING DOOR")
