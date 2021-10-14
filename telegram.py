@@ -5,10 +5,12 @@ Adds support for Telegram Bot messaging.
 To enable, provide a TELEGRAM_TOKEN environment variable.
 """
 
-import asyncio
 import logging
 from os import getenv
+from typing import NoReturn
 
+from asyncio import sleep
+from asyncio.runners import run
 from aiogram import Bot, Dispatcher, types
 from aiogram.utils import exceptions
 
@@ -45,9 +47,9 @@ async def send_message(user_id: int, text: str, disable_notification: bool = Fal
         log.error("Target [%s]: invalid user ID", user_id)
 
     except exceptions.RetryAfter as e:
-        log.error(
-            "Target [%s]: flood limit exceeded, sleeping %d.", user_id, e.timeout)
-        await asyncio.sleep(e.timeout)
+        log.error("Target [%s]: flood limited, sleeping %d.",
+                  user_id, e.timeout)
+        await sleep(e.timeout)
         return await send_message(user_id, text)
 
     except exceptions.UserDeactivated:
@@ -63,11 +65,12 @@ async def send_message(user_id: int, text: str, disable_notification: bool = Fal
     return False
 
 
-async def send(message="Doorbell!"):
+def send(message="RING") -> NoReturn:
     """
     Sends a message to the envrionment-programmed recipients
 
     Keyword arguments:
     message -- Any string
     """
-    return [await send_message(t, message) for t in TELEGRAM_USERS]
+    #pylint: disable=W0106
+    [run(send_message(t, message)) for t in TELEGRAM_USERS]
