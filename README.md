@@ -4,6 +4,8 @@ Dockerized Python serial modem attendant to pick up and dial a key.
 
 [![Pylint](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/pylint.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/pylint.yml) [![CodeQL](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/codeql-analysis.yml)
 
+[![Percentage of issues still open](https://isitmaintained.com/badge/open/michaelsanford/DTMF-Butler.svg)](https://github.com/michaelsanford/DTMF-Butler/issues "Percentage of issues still open") [![GitHub open-pull-requests](https://badgen.net/github/open-prs/michaelsanford/DTMF-Butler)](https://github.com/michaelsanford/DTMF-Butler/pulls?q=is%3Aopen) [![GitHub license](https://badgen.net/github/license/michaelsanford/DTMF-Butler)](https://github.com/michaelsanford/DTMF-Butler/blob/main/LICENSE)
+
 ## Quickstart
 
 1. Integrate the included `docker-compose.yml`
@@ -43,4 +45,5 @@ docker run -it --rm --user=root --device=/dev/ttyACM0 --name=dtmf-butler dtmf-bu
 - [Send DTMF Tones with Raspberry Pi](https://iotbytes.wordpress.com/send-dtmf-tones-with-raspberry-pi)
 
 Neat projects:
-- https://github.com/stanzheng/home-rotary-doorbot
+
+- <https://github.com/stanzheng/home-rotary-doorbot>
