@@ -34,11 +34,13 @@ docker run -it --rm --user=root --device=/dev/ttyACM0 --name=dtmf-butler dtmf-bu
 
 ## References, Thanks and Other Cool Projects
 
-- [https://michaelgellis.tripod.com/modem.html]
-- [https://en.wikibooks.org/wiki/Serial_Programming/Modems_and_AT_Commands]
-- [https://en.wikipedia.org/wiki/Voice_modem_command_set]
-- [https://en.wikipedia.org/wiki/Hayes_command_set]
-- [https://www.cmrr.umn.edu/~strupp/serial.html#modems]
-- [https://iotbytes.wordpress.com/usb-analog-modem-with-raspberry-pi/]
-- [https://iotbytes.wordpress.com/send-dtmf-tones-with-raspberry-pi]
-- [https://github.com/stanzheng/home-rotary-doorbot]
+- [Modem AT Command Set](https://michaelgellis.tripod.com/modem.html)
+- [Serial Programming/Modems and AT Commands](https://en.wikibooks.org/wiki/Serial_Programming/Modems_and_AT_Commands)
+- [Voice modem command set](https://en.wikipedia.org/wiki/Voice_modem_command_set)
+- [Hayes command set](https://en.wikipedia.org/wiki/Hayes_command_set)
+- ["Serial Programming Guide for POSIX Operating Systems" 5th Edition, Michael R. Sweet, 1994](https://www.cmrr.umn.edu/~strupp/serial.html#modems)
+- [USB Analog Modem with Raspberry Pi](https://iotbytes.wordpress.com/usb-analog-modem-with-raspberry-pi/)
+- [Send DTMF Tones with Raspberry Pi](https://iotbytes.wordpress.com/send-dtmf-tones-with-raspberry-pi)
+
+Neat projects:
+- https://github.com/stanzheng/home-rotary-doorbot
