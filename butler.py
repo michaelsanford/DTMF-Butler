@@ -142,7 +142,7 @@ def answer():
 
     log = logging.getLogger('answer')
 
-    telegram.send(message="Ansering door")
+    telegram.send("🚪🛎 - Answering the door...")
 
     if not AT("+FCLASS=8"):
         log.error("Failed set voice mode.")
@@ -152,10 +152,10 @@ def answer():
 
     if not AT(f"+VTS={DIAL}"):
         log.error("Failed dial")
-        telegram.send("FAILED to open the door.")
+        telegram.send("❌ <u>FAILED</u> to open the door.")
     else:
         log.info("Dial success.")
-        telegram.send("The door has OPENED.")
+        telegram.send("✅ The door has <i>OPENED</i>.")
 
     if not AT("+VLS=0"):
         log.info("Failed to hang up voice, trying hard hook.")

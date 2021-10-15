@@ -7,12 +7,10 @@ To enable, provide a TELEGRAM_TOKEN environment variable.
 
 import logging
 from os import getenv
-from typing import NoReturn
 
 from asyncio import sleep
-from asyncio.runners import run
 from aiogram import Bot, Dispatcher, types
-from aiogram.utils import exceptions
+from aiogram.utils import exceptions, executor
 
 TELEGRAM_TOKEN = getenv('TELEGRAM_TOKEN')
 TELEGRAM_USERS = getenv('TELEGRAM_USERS').split(',')
@@ -21,8 +19,6 @@ logging.basicConfig(level=logging.INFO)
 log = logging.getLogger('telegam')
 
 log.info("Module loaded.")
-# TODO Remove this before merging to main.
-log.info("Sending as bot %s to %s", TELEGRAM_TOKEN, TELEGRAM_USERS)
 
 bot = Bot(token=TELEGRAM_TOKEN, parse_mode=types.ParseMode.HTML)
 dp = Dispatcher(bot)
@@ -65,12 +61,12 @@ async def send_message(user_id: int, text: str, disable_notification: bool = Fal
     return False
 
 
-def send(message="RING") -> NoReturn:
+def send(message="RING"):
     """
     Sends a message to the envrionment-programmed recipients
 
     Keyword arguments:
     message -- Any string
     """
-    #pylint: disable=W0106
-    [run(send_message(t, message)) for t in TELEGRAM_USERS]
+    for t in TELEGRAM_USERS:
+        executor.start(dp, send_message(t, message))
