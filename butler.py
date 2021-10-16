@@ -79,6 +79,10 @@ def configure_modem():
     except:
         log.fatal("Unable to initialize the modem, %s:", Exception.__name__)
         log.fatal(Exception.with_traceback())
+
+        if "telegram" in sys.modules:
+            telegram.send("❌ The Butler was <u>UNABLE TO START</u>.")
+
         sys.exit(1)
 
 
@@ -142,7 +146,8 @@ def answer():
 
     log = logging.getLogger('answer')
 
-    telegram.send("🚪🛎 - Answering the door...")
+    if "telegram" in sys.modules:
+        telegram.send("🚪🛎 - Answering the door...")
 
     if not AT("+FCLASS=8"):
         log.error("Failed set voice mode.")
@@ -152,10 +157,12 @@ def answer():
 
     if not AT(f"+VTS={DIAL}"):
         log.error("Failed dial")
-        telegram.send("❌ <u>FAILED</u> to open the door.")
+        if "telegram" in sys.modules:
+            telegram.send("❌ <u>FAILED</u> to open the door.")
     else:
         log.info("Dial success.")
-        telegram.send("✅ The door has <i>OPENED</i>.")
+        if "telegram" in sys.modules:
+            telegram.send("✅ The door has <i>OPENED</i>.")
 
     if not AT("+VLS=0"):
         log.info("Failed to hang up voice, trying hard hook.")
@@ -165,6 +172,9 @@ def answer():
 configure_modem()
 
 log.info("Monitoring modem...")
+
+if "telegram" in sys.modules:
+    telegram.send("🧷 The Butler has <u>RESTARTED</u>.")
 
 while True:
 
