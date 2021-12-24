@@ -2,9 +2,11 @@
 
 Dockerized Python serial modem attendant to pick up and dial a key.
 
-[![Pylint](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/pylint.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/pylint.yml) [![CodeQL](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/codeql-analysis.yml)
+[![Pylint](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/pylint.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/pylint.yml) 
+[![CodeQL](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/codeql-analysis.yml)
+[![Snyk Container](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/snyk-container-analysis.yml/badge.svg)](https://github.com/michaelsanford/DTMF-Butler/actions/workflows/snyk-container-analysis.yml)
 
-[![Percentage of issues still open](https://isitmaintained.com/badge/open/michaelsanford/DTMF-Butler.svg)](https://github.com/michaelsanford/DTMF-Butler/issues "Percentage of issues still open") [![GitHub open-pull-requests](https://badgen.net/github/open-prs/michaelsanford/DTMF-Butler)](https://github.com/michaelsanford/DTMF-Butler/pulls?q=is%3Aopen) [![GitHub license](https://badgen.net/github/license/michaelsanford/DTMF-Butler)](https://github.com/michaelsanford/DTMF-Butler/blob/main/LICENSE)
+[![GitHub license](https://badgen.net/github/license/michaelsanford/DTMF-Butler)](https://github.com/michaelsanford/DTMF-Butler/blob/main/LICENSE)
 
 ## Quickstart
 
