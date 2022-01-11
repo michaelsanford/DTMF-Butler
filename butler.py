@@ -11,6 +11,7 @@ DIAL = getenv('DIAL', '6')
 TIMEOUT = int(getenv('TIMEOUT', '3'))
 TELEGRAM_TOKEN = getenv('TELEGRAM_TOKEN', None)
 TELEGRAM_USERS = getenv('TELEGRAM_USERS', None)
+NOTIFY_ONLY = bool(getenv('NOTIFY_ONLY', None))
 
 hc_fail_counter = 0
 modem_listen = True
@@ -191,4 +192,8 @@ while True:
             log.info(response)
 
         if "R" in response:
-            answer()
+            if "telegram" in sys.modules:
+                telegram.send("🔔 Intercom is ringing...")
+
+            if not NOTIFY_ONLY:
+                answer()

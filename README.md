@@ -16,12 +16,13 @@ Dockerized Python serial modem attendant to pick up and dial a key.
 
 1. Set any `environment:` variables you need, or omit them to accept the defaults
 
-| Environment Variable | Default | Purpose |
-|---|---|---|
-| `DIAL` | `6` | The button to press after picking up, `0`-`9`, `*` or `#` |
-| `TIMEOUT` | `3` | Timeout (seconds) for modem to react to commands, serial read-write. |
-| `TELEGRAM_TOKEN` | `None` | Your Telegram bot API token. Leave blank to disable. |
-| `TELEGRAM_USERS` | `None` | Comma-separated list of Telegram IDs to message. |
+| Environment Variable | Default | Purpose                                                                      |
+|----------------------|---------|------------------------------------------------------------------------------|
+| `NOTIFY_ONLY`        | `None`  | If present and not `""` will only notify; will not dial in response to RING. |
+| `DIAL`               | `6`     | The button to press after picking up, `0`-`9`, `*` or `#`                    |
+| `TIMEOUT`            | `3`     | Timeout (seconds) for modem to react to commands, serial read-write.         |
+| `TELEGRAM_TOKEN`     | `None`  | Your Telegram bot API token. Leave blank to disable.                         |
+| `TELEGRAM_USERS`     | `None`  | Comma-separated list of Telegram IDs to message.                             |
 
 ## Complete Build
 
