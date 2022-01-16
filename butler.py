@@ -32,6 +32,9 @@ if not 1 <= TIMEOUT <= checks.TIMOUT_MAX:
 if TELEGRAM_TOKEN is not None and TELEGRAM_USERS is not None:
     import telegram
 
+if NOTIFY_ONLY:
+    log.info("Notify-only enabled - dialing blocked.")
+
 # Open the modem
 modem = serial.Serial(port='/dev/ttyACM0', baudrate=57600,
                       timeout=TIMEOUT, write_timeout=TIMEOUT)
