@@ -186,7 +186,7 @@ while True:
 
     health_check()
 
-    sleep(1)
+    sleep(2)
 
     if modem_listen:
         response = modem.readline().rstrip().decode()
