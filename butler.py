@@ -36,8 +36,11 @@ if NOTIFY_ONLY:
     log.info("Notify-only enabled - dialing blocked.")
 
 # Open the modem
-modem = serial.Serial(port='/dev/ttyACM0', baudrate=57600,
-                      timeout=TIMEOUT, write_timeout=TIMEOUT)
+try:
+    modem = serial.Serial(port='/dev/ttyACM0', baudrate=57600,
+                          timeout=TIMEOUT, write_timeout=TIMEOUT)
+except:
+    sys.exit(1)
 
 
 def configure_modem():
