@@ -1,2 +1,2 @@
 pyserial
-aiogram
+aiogram==2.23
